@@ -11,11 +11,12 @@ String taxonomyLabels[][];
 ArrayList<ArrayList<Integer>> taxonomyCounter = new ArrayList<ArrayList<Integer>>();
 
 float h = 240;
-float s = 83;
-float b = 65;
+float s = 87;
+float b = 64;
 
 //view
 float anglePerOne;
+PImage labels;
 
 void setup() {
     size(720, 720);
@@ -23,31 +24,33 @@ void setup() {
     colorMode(HSB, 360, 100, 100);
 
     loadData();
-
     anglePerOne = 360/dataNum;
+    labels = loadImage("UI/Labels.png");
 
+    strokeWeight(1);
+    stroke(240, 0, 100);
+    // noStroke();
     noLoop();
 }
 
 void draw() {
-    background(0, 0, 100);
+    background(0);
 
+    pushMatrix();
     translate(width/2, height/2);
     rotate(radians(-90));
 
-    fill(255);
-    noStroke();
-
     for(int i = 0; i < taxonomyNum; i++) {
         int currentAngle = 0;
-        float currentR = map(i, 0, taxonomyNum-1, 600, 100);
+        float currentR = map(i, 0, taxonomyNum-1, 600, 232);
+
         float currentS = map(i, 0, taxonomyNum-1, s, 10);
         float currentB = map(i, 0, taxonomyNum-1, b, 95);
 
         for(int j = 0; j < taxonomyCounter.get(i).size(); j++) {
             float currentH = map(j, 0, taxonomyCounter.get(i).size()-1, h, 120);
             if(taxonomyCounter.get(i).get(j) == 0) {
-                fill(0, 0, 100);
+                fill(0);
                 arc(0, 0, currentR, currentR, radians(currentAngle), radians(currentAngle+anglePerOne), PIE);
                 
                 currentAngle += anglePerOne;
@@ -55,16 +58,18 @@ void draw() {
             else {
                 fill(currentH, currentS, currentB);
                 float angle = taxonomyCounter.get(i).get(j)*anglePerOne;
-                println(angle);
+
                 arc(0, 0, currentR, currentR, radians(currentAngle), radians(currentAngle+angle), PIE);
 
                 currentAngle += angle;
             }
         }
     }
-
     fill(0, 0, 100);
-    ellipse(0, 0, 100, 100);
+    ellipse(0, 0, 180, 180);
+    popMatrix();
+
+    image(labels, 0, 0, width, height);
 }
 
 void loadData() {
@@ -105,9 +110,10 @@ void loadData() {
             }   
         }
         else {
+            int start = 0;
             for(int j = 0; j < spliter.length; j++) {
-                for(int a = 0; a < taxonomyNum; a++) {
-                    if( spliter[j].contains( taxonomyOrder[a] ) ) {
+                for(int a = start; a < taxonomyNum; a++) {
+                    if( spliter[j].contains(taxonomyOrder[a]) ) {
                         int id = taxonomyHierarchy[i-1][a];
                         if( spliter[j].equals( taxonomyLabels[i-1][a] ) == false ) {
                             id++;
@@ -117,6 +123,7 @@ void loadData() {
 
                         break;
                     }
+                    start++;
                 }
             }   
         }
@@ -125,37 +132,45 @@ void loadData() {
         taxonomyLabels[i] = taxonomyTitles;
 
         println(taxonomyHierarchy[i]);
+        println(taxonomyLabels[i]);
+        println("---------------------");
+        println();
     }
 
     for(int i = 0; i < taxonomyNum; i++) {
         ArrayList<Integer> counterList = new ArrayList<Integer>();
-        int currentID = 0;
-        int idCounter = 1;
+        int currentID = 1;
+        int idCounter = 0;
         for(int j = 0; j < dataNum; j++) {
-            if(taxonomyHierarchy[j][i] == 0) {
+            if(taxonomyHierarchy[j][i] == currentID) {
+                idCounter++;
+            }
+            else if(taxonomyHierarchy[j][i] == 0) {
+                if(idCounter > 0) {
+                    counterList.add(idCounter);
+                    idCounter = 0;
+                }
                 counterList.add(0);
             }
-            else if(j == 0) {
+            else if(taxonomyHierarchy[j][i] != currentID) {
+                if(idCounter > 0) {
+                    counterList.add(idCounter);
+                }
                 currentID = taxonomyHierarchy[j][i];
+                idCounter = 1;
             }
-            else {
-                if(taxonomyHierarchy[j][i] == currentID) {
-                    idCounter++;
-                }
-                else {
-                    counterList.add(idCounter);
-                    currentID = taxonomyHierarchy[j][i];
-                    idCounter = 1;
-                }
 
-                if(j == dataNum-1) {
-                    counterList.add(idCounter);
-                }
+            if(j == dataNum-1) {
+                if(idCounter > 0) counterList.add(idCounter);
             }
 
         }
         taxonomyCounter.add(counterList);
         println(taxonomyCounter.get(i));
+        println(taxonomyCounter.get(i).size());
+
+        println("---------------------");
+        println();
     }
     
 } 
