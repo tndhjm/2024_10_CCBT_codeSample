@@ -50,12 +50,14 @@ void draw() {
         for(int j = 0; j < taxonomyCounter.get(i).size(); j++) {
             float currentH = map(j, 0, taxonomyCounter.get(i).size()-1, h, 120);
             if(taxonomyCounter.get(i).get(j) == 0) {
+                noStroke();
                 fill(0);
                 arc(0, 0, currentR, currentR, radians(currentAngle), radians(currentAngle+anglePerOne), PIE);
                 
                 currentAngle += anglePerOne;
             }
             else {
+                stroke(240, 0, 100);
                 fill(currentH, currentS, currentB);
                 float angle = taxonomyCounter.get(i).get(j)*anglePerOne;
 
