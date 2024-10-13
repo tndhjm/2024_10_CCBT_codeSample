@@ -84,7 +84,7 @@ void loadData() {
     taxonomyHierarchy = new int[dataNum][taxonomyNum];
     taxonomyLabels = new String[dataNum][taxonomyNum];
 
-    
+    //taxonomyの振り分け、IDの付与
     for(int i = 0; i < dataNum; i++) {
         String temp = reference.getString(i, 2);
         String[] spliter = split(temp, ":");
@@ -139,6 +139,7 @@ void loadData() {
         println();
     }
 
+    //IDのカウント
     for(int i = 0; i < taxonomyNum; i++) {
         ArrayList<Integer> counterList = new ArrayList<Integer>();
         int currentID = 1;
